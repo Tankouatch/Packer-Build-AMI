@@ -1,6 +1,7 @@
 # curl -fsSL https://apt.releases.hashicorp.com/gpg | apt-key add -
 # apt-add-repository "deb [arch=amd64] https://apt.releases.hashicorp.com $(lsb_release -cs) main"
 # apt-get update && apt-get install packer
+<<<<<<< HEAD
 # rm /usr/local/bin/packer
 #  apt-get update
 #  apt-get install -y wget unzip
@@ -9,6 +10,17 @@
 # packer --version
 # rm packer_1.7.8_linux_amd64.zip
 #  mv packer /usr/local/bin
+=======
+apt-get update
+apt-get install -y wget unzip
+wget https://releases.hashicorp.com/packer/1.10.1/packer_1.10.1_linux_amd64.zip
+
+unzip packer_1.10.1_linux_amd64.zip
+
+packer --version
+rm packer_1.10.1_linux_amd64.zip
+mv packer /usr/local/bin
+>>>>>>> 5eea304c771d866a2f03a19065eddb38b5494ede
 
 
 

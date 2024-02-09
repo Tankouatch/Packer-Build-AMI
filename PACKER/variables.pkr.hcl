@@ -1,4 +1,17 @@
+<<<<<<< HEAD
 variable "aws_access_key" {
+=======
+packer {
+  required_plugins {
+    amazon =  {
+      version = >=1.2.8
+      source = "github.com/hashicorp/amazon"
+    }
+  }
+}
+
+variable "AWS_ACCESS_KEY_ID" {
+>>>>>>> 5eea304c771d866a2f03a19065eddb38b5494ede
   type    = string
   default = ""
   sensitive = true
