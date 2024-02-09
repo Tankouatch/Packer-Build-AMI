@@ -3,10 +3,12 @@
 # apt-get update && apt-get install packer
 apt-get update
 apt-get install -y wget unzip
-wget https://releases.hashicorp.com/packer/1.7.8/packer_1.7.8_linux_amd64.zip
-unzip packer_1.7.8_linux_amd64.zip -d /usr/local/bin
+wget https://releases.hashicorp.com/packer/1.10.1/packer_1.10.1_linux_amd64.zip
+
+unzip packer_1.10.1_linux_amd64.zip
+
 packer --version
-rm packer_1.7.8_linux_amd64.zip
+rm packer_1.10.1_linux_amd64.zip
 mv packer /usr/local/bin
 
 
