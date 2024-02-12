@@ -1,11 +1,11 @@
-  packer {
-    required_plugins {
-      amazon =  {
-        version = ">= 1.2.0, < 2.0.0"
-        source = "github.com/hashicorp/amazon"
-      }
+packer {
+  required_plugins {
+    amazon = {
+      version = ">= 1.2.3"
+      source  = "github.com/hashicorp/amazon"
     }
   }
+}
 
 source "amazon-ebs" "ubuntu" {
   aws_access_key           = var.AWS_ACCESS_KEY_ID
@@ -38,6 +38,7 @@ build {
 
   provisioner "shell" {
     inline = [
+      "set -eu", # Stop on error and treat unset variables as an error
       "sudo apt-get update",
       "sudo useradd -m s4tankoua || true", 
       "sudo -u s4tankoua mkdir -p /home/s4tankoua/.ssh || true", 
@@ -48,27 +49,28 @@ build {
       "echo 's4tankoua ALL=(ALL) NOPASSWD:ALL' | sudo tee /etc/sudoers.d/s4tankoua",
       "sudo chmod 0440 /etc/sudoers.d/s4tankoua",
       "sudo usermod -aG docker ${SSH_USERNAME}",
-      "sudo apt install apt-utils kubectl mysql-client postgresql-client docker-compose default-jdk default-jre python3 python3-pip git nodejs npm maven wget ansible htop vim watch build-essential openssh-server -y",
-      "sudo git clone https://github.com/ahmetb/kubectx /opt/kubectx",
-      "sudo ln -s /opt/kubectx/kubectx /usr/local/bin/kubectx",
-      "sudo ln -s /opt/kubectx/kubens /usr/local/bin/kubens",
-      "curl https://baltocdn.com/helm/signing.asc | sudo apt-key add -",
-      "echo deb https://baltocdn.com/helm/stable/debian/ all main | sudo tee /etc/apt/sources.list.d/helm-stable-debian.list",
-      "sudo apt update",
-      "sudo apt install helm",
-      "curl https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip -o awscliv2.zip",
-      "unzip awscliv2.zip",
-      "sudo ./aws/install",
-      "sudo apt update",
-      "sudo apt install apt-transport-https ca-certificates curl software-properties-common",
+       # Grouping package installations
+      "sudo apt-get install -y apt-utils postgresql-client python3 python3-pip git wget htop vim watch openssh-server unzip build-essential   openjdk-13-jdk openjdk-13-jre mysql-client-8.0 mysql-client software-properties-common ansible apt-transport-https ca-certificates  curl docker-ce docker-ce-cli containerd.io",
+      # Docker Compose installation
       "curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -",
-      "sudo add-apt-repository deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable",
+      "sudo add-apt-repository \"deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable\"",
       "sudo apt update",
-      "sudo apt install docker-ce",
-      "curl -fsSL https://apt.releases.hashicorp.com/gpg | sudo apt-key add -",
-      "sudo apt-add-repository deb [arch=amd64] https://apt.releases.hashicorp.com $(lsb_release -cs) main",
-      "sudo apt update",
-      "sudo apt install terraform",
+      # Maven Installation (Choose either direct download or package installation, not both)
+      "sudo curl -L https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m) -o /usr/local/bin/docker-compose || { echo 'Failed to download Docker Compose'; exit 1; }",
+      "sudo tar xzvf apache-maven-3.9.6-bin.tar.gz -C /opt || { echo 'Failed to extract Maven'; exit 1; }",
+      ##"echo 'export PATH=/opt/apache-maven-3.9.6/bin:\$PATH' >> ~/.bashrc",
+      "echo 'export PATH=/opt/apache-maven-3.9.6/bin:$PATH' >> ~/.bashrc",
+      # Node.js installation
+      "sudo apt-get update",
+      "sudo apt-get install -y software-properties-common",
+      "curl -sL https://deb.nodesource.com/setup_14.x | sudo -E bash - || { echo 'Failed to setup Node.js repository'; exit 1; }",
+      "sudo apt-get install -y nodejs",
+      # AWS CLI v2 installation
+      "curl \"https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip\" -o \"awscliv2.zip\" || { echo 'Failed to download AWS CLI v2';   exit 1; }",
+      "unzip awscliv2.zip",
+      "sudo ./aws/install || { echo 'AWS CLI v2 installation failed'; exit 1; }",
+      # Additional setup commands here...
+      "echo 'Provisioning complete!'"
 
     ]
   }

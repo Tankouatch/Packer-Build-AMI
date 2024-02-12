@@ -17,7 +17,7 @@ wget https://releases.hashicorp.com/packer/1.10.1/packer_1.10.1_linux_amd64.zip
 
 unzip packer_1.10.1_linux_amd64.zip
 
-packer --version
+packer version
 rm packer_1.10.1_linux_amd64.zip
 mv packer /usr/local/bin
 >>>>>>> 5eea304c771d866a2f03a19065eddb38b5494ede
